@@ -140,7 +140,7 @@ int main(){
 			printf("%s %c - %c + %c = %d\n",cursory==2?"->":"  ",'0'+numbers[6],'0'+numbers[7],'0'+numbers[8],rowSums[2]);
 			printf("   =   =   =\n");
 			printf("   %2d  %2d  %2d\n",colSums[0],colSums[1],colSums[2]);
-			printf("Navigate Screen (WASD) or Press Escape when your finished>\n");
+			printf("Navigate Screen (WASD), Press Enter when finished, or Escape to quit>\n");
 			dir = waitch();
 			switch(dir){
 			case 'W':
@@ -159,7 +159,11 @@ int main(){
 			case 'd':
 				cursorx++;
 			break;
-
+			case '\r':
+			case '\n':
+				goto check_break;
+			case '\033':
+				goto quit;//Break twice if we press escape
 			default:
 				if(dir>'0'&&dir<='9'){
 					if(numbers[cursorx+3*cursory]==('?'-'0'))
@@ -169,7 +173,8 @@ int main(){
 			}
 			cursorx = wrap(cursorx,3);
 			cursory = wrap(cursory,3);
-		}while(dir!='\033');
+		}while(true);
+		check_break: ;
 		int check[3];
 		bool hasSolved = true;
 		solveRows(numbers,check);
@@ -184,6 +189,7 @@ int main(){
 			puts("Congratulations, you solved the puzzle.");
 		printf("Press any key to return to the menu>");
 		waitch();
+		quit: ;
 	}
 	clearScreen();
 	Random_free(rand);
