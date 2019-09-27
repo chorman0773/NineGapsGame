@@ -9,14 +9,14 @@ LIBS = m
 
 
 
-ALL_LD_FLAGS := $(LDFLAGS) $(foreach library,$(LIBS),-l$(library))
+ALL_LD_FLAGS := $(LDFLAGS) 
 
 OUTPUT:=ninegaps
 
 OBJECTS = src/main.o libconinteract/libconinteract.a random/librandom.a
 
 $(OUTPUT): $(OBJECTS)
-	$(CC) $(ALL_LD_FLAGS) -o $@ $^
+	$(CC) $(ALL_LD_FLAGS) -o $@ $^ $(foreach library,$(LIBS),-l$(library))
 
 libconinteract/libconinteract.a: 
 	$(MAKE) -C libconinteract
