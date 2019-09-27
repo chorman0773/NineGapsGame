@@ -5,11 +5,11 @@ INCLUDES = random/include libconinteract/include
 
 ALL_CFLAGS = $(CFLAGS) $(foreach include,$(INCLUDES),-I$(include)) -fPIC
 
-LIBS =
+LIBS = m
 
 
 
-ALL_LD_FLAGS := $(foreach $(library),$(LIBS),-l$(library))
+ALL_LD_FLAGS := $(LDFLAGS) $(foreach library,$(LIBS),-l$(library))
 
 OUTPUT:=ninegaps
 
