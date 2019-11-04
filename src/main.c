@@ -100,12 +100,12 @@ static void hide(Random* rand,int* arr,int len,int count,int hideval){
 int main(){
 
 	int difficulty;
-	const char* difficulties[] = {"Easy","Medium","Hard"};
+	const char* difficulties[] = {"Easy","Medium","Hard","Extreme",0};
 	//Initialize the Psuedorandom Number Generator
 	Random* rand = Random_new();
 	Random_seed(rand);
 
-	while((difficulty=menu("Please Select your difficulty",difficulties,3))!=-1){
+	while((difficulty=menu("Please Select your difficulty",difficulties))!=-1){
 		//Set Initial Cursor Positions
 		int cursorx = 0;
 		int cursory = 0;
