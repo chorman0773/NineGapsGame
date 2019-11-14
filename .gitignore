@@ -5,4 +5,7 @@
 *.zip
 
 ninegaps
+.idea/
+cmake-build-debug/
+CMakeLists.txt
 
