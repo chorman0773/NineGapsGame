@@ -34,3 +34,6 @@ clean: clean-recursive
 
 %.o: %.c
 	$(CC) $(ALL_CFLAGS) -o $@ -c $^
+
+dist: clean
+	zip -r NineGapsGame.zip src/ libconinteract/ random/ README.md Makefile

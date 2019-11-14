@@ -60,21 +60,47 @@ static void randomShuffle(Random* rand,int* arr,int len,int passc){
  * Addition is used between all values in the row.
  * Places the solutions into rowSums[0..nrows].
  */
-static void solveRows(int* arr,int* rowSums){
-	rowSums[0] = arr[0]*arr[1]-arr[2];
-	rowSums[1] = arr[3]+arr[4]*arr[5];
-	rowSums[2] = arr[6]-arr[7]+arr[8];
+static void solveRows(int* arr,int* rowSums,int* rowOps){
+	rowSums[0] = arr[0];
+    rowSums[1] = arr[3];
+    rowSums[2] = arr[6];
+	for(int i = 0;i<3;i++)
+	    for(int j = 1;j<3;j++)
+	        switch(rowOps[i*3+j]) {
+	        case 0:
+	            rowSums[i] += arr[i*3+j];
+	            break;
+	        case 1:
+	            rowSums[i] -= arr[i*3+j];
+	            break;
+	        case 2:
+	            rowSums[i] *= arr[i*3+j];
+	            break;
+            }
+
 }
 
 /**
- * Solves the rows of the flat 2-dimensional array at arr.
- * Addition is used between all values in the row.
+ * Solves the columns of the flat 2-dimensional array at arr.
  * Places the solutions into rowSums[0..ncols].
  */
-static void solveCols(int* arr,int* colSums){
-	colSums[0] = arr[0]+arr[3]*arr[6];
-	colSums[1] = arr[1]-arr[4]+arr[7];
-	colSums[2] = arr[2]*arr[5]-arr[8];
+static void solveCols(int* arr,int* colSums,int* ops){
+	colSums[0] = arr[0];
+	colSums[1] = arr[1];
+	colSums[2] = arr[2];
+    for(int i = 0;i<3;i++)
+        for(int j = 1;j<3;j++)
+            switch(ops[j*3+i]) {
+                case 0:
+                    colSums[i] += arr[j*3+i];
+                    break;
+                case 1:
+                    colSums[i] -= arr[j*3+i];
+                    break;
+                case 2:
+                    colSums[i] *= arr[j*3+i];
+                    break;
+            }
 }
 
 /**
@@ -98,100 +124,117 @@ static void hide(Random* rand,int* arr,int len,int count,int hideval){
 }
 
 int main(){
+    const char ops[3] = "+-*";
+    int difficulty;
+    //Initialize difficulty list. The Null pointer indicates the end of the list, so length does not need to be passed in to the function
+    const char* const difficulties[] = {"Easy","Medium","Hard","Extreme",0};
+    //Initialize the Psuedorandom Number Generator
+    Random* rand = Random_new();
+    Random_seed(rand);
+	//Select Difficulty using the menu function, exit on -1 (which is triggered by pressing escape
+    while((difficulty=menu("Please Select your difficulty (Navigate with W and S, press Enter to select, or Escape to quit)",difficulties))!=-1){
+        //Set Initial Cursor Positions
+        int cursorx = 0;
+        int cursory = 0;
+        //Menu is Zero Indexed, but are calculation expects Easy to be 1,
+        // So Change it here
+        difficulty++;
 
-	int difficulty;
-	const char* difficulties[] = {"Easy","Medium","Hard","Extreme",0};
-	//Initialize the Psuedorandom Number Generator
-	Random* rand = Random_new();
-	Random_seed(rand);
+        //Initialize numbers to [1..9]
+        //This along with randomShuffle ensures that each number in [1,9] is used exactly once.
+        //Also allocate space for rowSums and colSums, but don't do anything with that space
+        int numbers[] = {1,2,3,4,5,6,7,8,9};
+        int rowSums[3];
+        int colSums[3];
+        int rowOps[9]; //Allocate space for 9 operations. The first column is unused, but makes calculations easier
+        int colOps[9]; // Same here, but first row is unused
 
-	while((difficulty=menu("Please Select your difficulty",difficulties))!=-1){
-		//Set Initial Cursor Positions
-		int cursorx = 0;
-		int cursory = 0;
-		//Menu is Zero Indexed, but are calculation expects Easy to be 1,
-		// So Change it here
-		difficulty++;
-
-		//Initialize numbers to [1..9]
-		//This along with randomShuffle ensures that each number in [1,9] is used exactly once.
-		//Also allocate space for rowSums and colSums, but don't do anything with that space
-		int numbers[] = {1,2,3,4,5,6,7,8,9};
-		int rowSums[3];
-		int colSums[3];
-
-		//Shuffle the rows.
-		//Use 12-pass selection shuffle to distribute properly,
-		//and avoid lack of proper distribution introduced by Selection Shuffle
-		// and the PRNG.
-		randomShuffle(rand,numbers,9,12);
-		solveRows(numbers,rowSums);
-		solveCols(numbers,colSums);
-		hide(rand,numbers,9,difficulty*2+1,'?'-'0');
-		int dir;
-		do{
-			clearScreen();
-			printf("   %c   %c   %c\n",cursorx==0?'|':' ',cursorx==1?'|':' ',cursorx==2?'|':' ');
-			printf("   %c   %c   %c\n",cursorx==0?'v':' ',cursorx==1?'v':' ',cursorx==2?'v':' ');
-			printf("%s %c * %c - %c = %d\n",cursory==0?"->":"  ",'0'+numbers[0],'0'+numbers[1],'0'+numbers[2],rowSums[0]);
-			printf("   +   -   *\n");
-			printf("%s %c + %c * %c = %d\n",cursory==1?"->":"  ",'0'+numbers[3],'0'+numbers[4],'0'+numbers[5],rowSums[1]);
-			printf("   *   +   -\n");
-			printf("%s %c - %c + %c = %d\n",cursory==2?"->":"  ",'0'+numbers[6],'0'+numbers[7],'0'+numbers[8],rowSums[2]);
-			printf("   =   =   =\n");
-			printf("   %2d  %2d  %2d\n",colSums[0],colSums[1],colSums[2]);
-			printf("Navigate Screen (WASD), Press Enter when finished, or Escape to quit>\n");
-			dir = waitch();
-			switch(dir){
-			case 'W':
-			case 'w':
-				cursory--;
-			break;
-			case 'A':
-			case 'a':
-				cursorx--;
-			break;
-			case 'S':
-			case 's':
-				cursory++;
-			break;
-			case 'D':
-			case 'd':
-				cursorx++;
-			break;
-			case '\r':
-			case '\n':
-				goto check_break;
-			case '\033':
-				goto quit;//Break twice if we press escape
-			default:
-				if(dir>'0'&&dir<='9'){
-					if(numbers[cursorx+3*cursory]==('?'-'0'))
-						numbers[cursorx+3*cursory] = dir-'0';
-				}
-			break;
-			}
-			cursorx = wrap(cursorx,3);
-			cursory = wrap(cursory,3);
-		}while(true);
-		check_break: ;
-		int check[3];
-		bool hasSolved = true;
-		solveRows(numbers,check);
-		for(int y = 0;y<3;y++)
-			if(rowSums[y]!=check[y])
-				hasSolved=false,printf("Incorrect Solution on row %d, expected %d\n",y+1,rowSums[y]);
-		solveCols(numbers,check);
-		for(int y = 0;y<3;y++)
-					if(colSums[y]!=check[y])
-						hasSolved=false,printf("Incorrect Solution on column %d, expected %d\n",y+1,colSums[y]);
-		if(hasSolved)
-			puts("Congratulations, you solved the puzzle.");
-		printf("Press any key to return to the menu>");
-		waitch();
-		quit: ;
+        //Shuffle the rows.
+        //Use 12-pass selection shuffle to distribute properly,
+        //and avoid lack of proper distribution introduced by Selection Shuffle
+        // and the PRNG.
+        randomShuffle(rand,numbers,9,12);
+        Random_intsb(rand,rowOps,9,0,3);
+        Random_intsb(rand,colOps,9,0,3);
+        //After shuffling, solve the rows and colums
+        solveRows(numbers,rowSums,rowOps);
+        solveCols(numbers,colSums,colOps);
+        //Now hide entries in the array by replacing them with '?'
+        hide(rand,numbers,9,difficulty*2+1,'?'-'0'); //Dirty Dirty Hacks
+        int dir;
+        do{
+            clearScreen();
+            printf("   %c   %c   %c\n",cursorx==0?'|':' ',cursorx==1?'|':' ',cursorx==2?'|':' ');
+            printf("   %c   %c   %c\n",cursorx==0?'v':' ',cursorx==1?'v':' ',cursorx==2?'v':' ');
+            for(int i = 0;i<3;i++){
+                if(i!=0) {
+                    printf(" ");
+                    for (int j = 0; j < 3; j++)
+                        printf("  %c ", ops[colOps[i * 3 + j]]);
+                    printf("\n");
+                }
+                printf("%s ",cursory==i?"->":"  ");
+                for (int j = 0; j < 3; j++) {
+                    if(j!=0)
+                        printf("%c ",ops[rowOps[i*3+j]]);
+                    printf("%c ",'0'+numbers[i * 3 + j]);
+                }
+                printf("= %2d\n",rowSums[i]);
+            }
+            printf("   =   =   =\n");
+            printf("   %2d  %2d  %2d\n",colSums[0],colSums[1],colSums[2]);
+            printf("Navigate Screen (WASD), Press a number (1-9) to insert it into the selected position, Press Enter when finished, or Escape to quit>\n");
+            dir = waitch();
+            switch(dir){
+            case 'W':
+            case 'w':
+                cursory--;
+            break;
+            case 'A':
+            case 'a':
+                cursorx--;
+            break;
+            case 'S':
+            case 's':
+                cursory++;
+            break;
+            case 'D':
+            case 'd':
+                cursorx++;
+            break;
+            case '\n':
+                goto check_break; //Check if a player presses enter. 
+            case '\033':
+                goto quit;//End this game without solving with Escape is pressed, return to the menu
+            default:
+                if(dir>'0'&&dir<='9'){
+                    if(numbers[cursorx+3*cursory]==('?'-'0'))
+                        numbers[cursorx+3*cursory] = dir-'0';
+                }
+            break;
+            }
+            cursorx = wrap(cursorx,3);
+            cursory = wrap(cursory,3);
+        }while(true);
+        check_break: ;
+        int check[3];
+        bool hasSolved = true;
+        solveRows(numbers,check,rowOps);
+        for(int y = 0;y<3;y++)
+            if(rowSums[y]!=check[y])
+                hasSolved=false,printf("Incorrect Solution on row %d, expected %d\n",y+1,rowSums[y]);
+        solveCols(numbers,check,colOps);
+        for(int y = 0;y<3;y++)
+            if(colSums[y]!=check[y])
+		        hasSolved=false,printf("Incorrect Solution on column %d, expected %d\n",y+1,colSums[y]);
+        if(hasSolved)
+            puts("Congratulations, you solved the puzzle.");
+        printf("Press any key to return to the menu>");
+        waitch();
+        quit: ;
 	}
-	clearScreen();
-	Random_free(rand);
+    clearScreen();
+    Random_free(rand); // Release the Psuedo-random Number generator. 
+    //This is important as the generator is allowed to initialize a lock that needs to be uninitialized
 }
 

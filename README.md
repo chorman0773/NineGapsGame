@@ -7,3 +7,11 @@ This software is distributed in the hopes that it will be useful, but is distrib
 
 The program under `/random` is distributed under the terms of the MIT License, and is Copyright (C) 2019 Connor Horman. See `/random/LICENSE` for details.
 The program under `/libconinteract` is distributed under the terms of the MIT License, and is Copyright (C) 2019 Connor Horman. See `/libconinteract/LICENSE` for details. 
+
+## How to build
+
+The program can be built on Linux or cygwin by entering `make` into the shell. 
+Native Windows Support is not provided due to issues in libconinteract, MacOS support is not guaranteed. 
+
+To play, follow directions in game (start the game with `./ninegaps`).
+
