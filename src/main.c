@@ -49,9 +49,9 @@ static int wrap(int val,int max){
  * 	for each index, i, in the array, pick a random index, j, and swap arr[i] with arr[j]
  */
 static void randomShuffle(Random* rand,int* arr,int len,int passc){
-	for(;passc>0;passc--)
-		for(int i = 0;i<len;i++)
-			swap(&arr[i],&arr[Random_nextIntb(rand,len)]);
+    for(;passc>0;passc--)
+        for(int i = 0;i<len;i++)
+            swap(&arr[i],&arr[Random_nextIntb(rand,len)]);
 }
 
 
@@ -61,7 +61,7 @@ static void randomShuffle(Random* rand,int* arr,int len,int passc){
  * Places the solutions into rowSums[0..nrows].
  */
 static void solveRows(int* arr,int* rowSums,int* rowOps){
-	rowSums[0] = arr[0];
+    rowSums[0] = arr[0];
     rowSums[1] = arr[3];
     rowSums[2] = arr[6];
 	for(int i = 0;i<3;i++)
