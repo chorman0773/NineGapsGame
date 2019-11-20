@@ -25,6 +25,7 @@ static void swap(int* a,int* b){
  * In particular, returns val%max.
  *
  * If the macro NOWRAP is defined, instead, clamps val to [0,max).
+ * Expects: max>0
  */
 static int wrap(int val,int max){
 #ifdef NOWRAP
@@ -57,8 +58,9 @@ static void randomShuffle(Random* rand,int* arr,int len,int passc){
 
 /**
  * Solves the rows of the flat 2-dimensional array at arr.
- * Addition is used between all values in the row.
- * Places the solutions into rowSums[0..nrows].
+ * Places the solutions into rowSums[0..2].
+ * Expects: rowOps[0..9] are all values in {0,1,2}.
+ *  Which operation corresponds to each value is unspecified, but all of +, -, and * are defined as a unique value in [0,2]
  */
 static void solveRows(int* arr,int* rowSums,int* rowOps){
     rowSums[0] = arr[0];
@@ -82,7 +84,9 @@ static void solveRows(int* arr,int* rowSums,int* rowOps){
 
 /**
  * Solves the columns of the flat 2-dimensional array at arr.
- * Places the solutions into rowSums[0..ncols].
+ * Places the solutions into rowSums[0..2].
+ * Expects: ops[0..9] are all values in {0,1,2}.
+ *  Which operation corresponds to each value is unspecified, but all of +, -, and * are defined as a unique value in [0,2].
  */
 static void solveCols(int* arr,int* colSums,int* ops){
 	colSums[0] = arr[0];
