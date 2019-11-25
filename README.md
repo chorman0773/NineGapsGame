@@ -26,5 +26,5 @@ You can press escape in game to return to the menu.
 
 To quit, press escape while in the main menu. 
 
-To play effectively, you will need to solve basic algebra questions (with addition, subtraction, and division). Note that currently, the order of operations is left to write and top to bottom, BEDMAS is not respected. This will be changed in a future version. 
+To play effectively, you will need to solve basic algebra questions (with addition, subtraction, and multiplication). Note that currently, the order of operations is left to write and top to bottom, BEDMAS is not respected. This will be changed in a future version. 
 
